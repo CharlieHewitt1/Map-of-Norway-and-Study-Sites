@@ -1,0 +1,38 @@
+library(GISTools)
+library(tmaptools)
+library(rgdal)
+library(rgeos)
+library(sp)
+library(raster)
+library(maptools)
+library(ggplot2)
+library(tmaptools)
+library(tmap)
+
+
+#create a new R object called norway_shape which is a geographical variable
+norway_shape <-read_shape(file="norway_shapefile/NOR_adm0.shp", as.sf=FALSE)
+plot(norway_shape)
+#create a new R object called karasjok_vest_shape which is a geographical variable
+karasjok_vest_shape <- read_shape(file="karasjok_vestre_shapefile/Karasjok_Vestre.shp", as.sf=FALSE)
+plot(karasjok_vest_shape)
+
+#create a new R object called ravdol_shape which is a geographical variable
+ravdol_shape <- read_shape(file="ravdol_shapefile/ravdol_shapefile.shp", as.sf=FALSE)
+
+
+
+# Transform all maps to the same CRS (coordinate reference system)
+norway_shp_transformed<- spTransform(norway_shape, crs(ravdol_shape))
+karasjok_vest_shape_transformed <-spTransform(karasjok_vest_shape, crs(ravdol_shape))
+ravdol_shape_transformed <-spTransform(ravdol_shape, crs(karasjok_vest_shape_transformed))
+
+  
+   
+#plot the data 
+tm_shape(norway_shp_transformed)
+plot(norway_shp_transformed)+
+  tm_compass(type = "8star", position = c("left","top"))+
+  tm_scale_bar(breaks= c(0,100,200), text.size=1)
+plot(karasjok_vest_shape_transformed, add=TRUE, col="blue")
+plot(ravdol_shape, add=TRUE, col="red")
